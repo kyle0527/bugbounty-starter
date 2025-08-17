@@ -1,0 +1,25 @@
+# Codex 啟動指令（請整段貼到 Codex 的輸入框）
+
+你是雲端工程代理。請依本 repository 內的規格檔執行以下要求：
+1) 讀取 `burp_pro_spec.json` 與 `TASKS_Plan.csv`；以 `version_tag` 與 `EvalRules_v2025-08-17` 為治理基準。
+2) 產出「Implementation plan」：列出將實作的 feature_id、有向依賴順序、里程碑與估時（以 `est_points` 為參考）。
+3) 建立初始專案骨架：
+   - 每個 feature 建一個資料夾：`impl/<category>.<feature_id>/`，內含 `README.md`、空的程式碼檔（依你選的語言）、`tests/`。
+   - 建立 `/tests/run_all.<ext>` 作為總測試入口。
+   - 建立 `/mapping/coverage.json`，欄位：feature_id、implemented、tests、status。
+
+4) 依 `ACCEPTANCE_Checklist.md` 生成：
+   - 單元測試樣板（unit）、整合測試樣板（integration）、冒煙測試腳本（smoke）。
+   - 為 `A_SCANNING.scanner_full_crawl_audit`、`B_MANUAL_TOOLS.proxy`、`G_REPORTING.reporting_scan_results` 三項先產出測試樣板。
+
+5) 依 `PROMPT_Agent_Instructions.md` 的規範，輸出：
+   - `PLAN.md`（實作計畫與里程碑）
+   - `HOWTO.md`（如何執行測試、如何擴充）
+
+限定：
+- 僅使用 `burp_pro_spec.json` 中列出的 feature；不得臆造。
+- 明確標註任何被跳過的 feature 與原因（例如等待依賴）。
+
+完成後，請回覆：
+- 變更清單（檔案/資料夾）
+- 待我批准後，準備開第一個 PR 的說明（標題、描述、檔案清單）。

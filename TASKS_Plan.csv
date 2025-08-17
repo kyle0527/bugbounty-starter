@@ -1,0 +1,17 @@
+feature_id,title,depends_on,priority,est_points
+project_files,Initialize disk-based project handling,,P0,3
+proxy,Implement core proxy intercept/history,project_files,P0,5
+target,Implement site map and scope,proxy,P0,5
+logger,Global logging and filters,proxy,P0,3
+repeater,HTTP/WS Repeater with custom actions hooks,proxy,P1,5
+intruder,Attack engine with payload types,repeater;target,P1,8
+scanner_full_crawl_audit,Browser-powered crawl & audit,burp_browser;target;settings_scan_configs,P0,13
+scanner_results_views,Results panes for scans,scanner_full_crawl_audit,P0,5
+scanner_targeted,Targeted scans from histories,proxy;target;scanner_results_views,P1,5
+scanner_api_only,API-only scans,scanner_results_views,P1,5
+scanner_authenticated,Recorded logins & auth scanning,configuration_library;session_settings,P1,5
+scanner_bchecks,BChecks integration,configuration_library;scanner_results_views,P2,3
+reporting_scan_results,Report generator,scanner_results_views,P1,5
+burp_ai_issues,AI on scan issues,scanner_results_views;settings_ai,P2,3
+burp_ai_repeater,AI in Repeater,repeater;settings_ai,P2,3
+rest_api,REST API control surface,project_files;scanner_results_views,P2,5

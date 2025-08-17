@@ -1,0 +1,1656 @@
+{
+  "meta": {
+    "name": "Burp Suite Professional – Functional Spec (A–G version)",
+    "version_tag": "v2025-08-17",
+    "generated_utc": "2025-08-17T18:45:42Z",
+    "completeness_basis": [
+      "Official Docs Indexes: Tools, Settings, Running scans (Pro only), Project files, Burp AI"
+    ],
+    "notes": [
+      "Only features explicitly marked pro_only=true in this spec are those that are clearly Professional-only per docs (Scanner, Collaborator).",
+      "Other tools exist in both editions but Professional includes the full integration and automation capabilities.",
+      "This spec mirrors the A–G structure from the latest answer for direct use by an AI build agent."
+    ],
+    "evaluation_rules_version": "EvalRules_v2025-08-17"
+  },
+  "categories": [
+    {
+      "id": "A_SCANNING",
+      "name": "Scanning (Professional-only)"
+    },
+    {
+      "id": "B_MANUAL_TOOLS",
+      "name": "Manual Testing Tools"
+    },
+    {
+      "id": "C_BURP_AI",
+      "name": "Burp AI (Professional)"
+    },
+    {
+      "id": "D_EXTENSIBILITY",
+      "name": "Extensibility & Automation"
+    },
+    {
+      "id": "E_PROJECTS_FILES",
+      "name": "Projects & Files"
+    },
+    {
+      "id": "F_SETTINGS",
+      "name": "Settings (Suite/Project/Tool/Session/Network/UI/AI/Extensions)"
+    },
+    {
+      "id": "G_REPORTING",
+      "name": "Reporting & Exports"
+    }
+  ],
+  "features": [
+    {
+      "id": "scanner_full_crawl_audit",
+      "category": "A_SCANNING",
+      "name": "Full crawl & audit",
+      "pro_only": true,
+      "description": "Browser-powered engine to discover application paths and perform active + passive audits.",
+      "capabilities": [
+        "JS/SPA handling",
+        "Heuristics-based discovery",
+        "Active/Passive checks",
+        "Crawl control"
+      ],
+      "inputs": [
+        "start_urls[]",
+        "scan_configuration_id",
+        "scope"
+      ],
+      "outputs": [
+        "issues[]",
+        "audit_log",
+        "event_log",
+        "live_crawl_view"
+      ],
+      "dependencies": [
+        "burp_browser",
+        "settings_scope",
+        "settings_scan_configs"
+      ],
+      "ui_paths": [
+        "Dashboard > New scan > Full crawl & audit"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_targeted",
+      "category": "A_SCANNING",
+      "name": "Targeted scan of selected requests/messages",
+      "pro_only": true,
+      "description": "Run audits against specific HTTP messages or insertion points selected from Proxy/Target/Logger.",
+      "capabilities": [
+        "Select from history",
+        "Choose insertion points",
+        "Per-request policies"
+      ],
+      "inputs": [
+        "http_messages[]",
+        "policy_id",
+        "scope"
+      ],
+      "outputs": [
+        "issues[]",
+        "audit_log"
+      ],
+      "dependencies": [
+        "proxy",
+        "target",
+        "logger"
+      ],
+      "ui_paths": [
+        "Context menu > Scan selected item(s)"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_api_only",
+      "category": "A_SCANNING",
+      "name": "API-only scans",
+      "pro_only": true,
+      "description": "Scan API endpoints without full crawling; suitable for OpenAPI/GraphQL/SOAP style targets.",
+      "capabilities": [
+        "Endpoint enumeration",
+        "Parameter fuzzing",
+        "Auth-aware auditing"
+      ],
+      "inputs": [
+        "api_endpoints[]",
+        "headers",
+        "auth_config_id"
+      ],
+      "outputs": [
+        "issues[]",
+        "audit_log"
+      ],
+      "dependencies": [
+        "settings_auth",
+        "settings_scan_configs"
+      ],
+      "ui_paths": [
+        "Dashboard > New scan > API-only"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_authenticated",
+      "category": "A_SCANNING",
+      "name": "Authenticated scanning",
+      "pro_only": true,
+      "description": "Maintain logged-in state using credentials and recorded login sequences managed in the Configuration Library.",
+      "capabilities": [
+        "Recorded logins",
+        "Credential vault",
+        "Session keep-alive"
+      ],
+      "inputs": [
+        "login_credentials",
+        "recorded_login_sequence_id"
+      ],
+      "outputs": [
+        "authenticated_issues[]",
+        "session_events"
+      ],
+      "dependencies": [
+        "settings_sessions",
+        "configuration_library"
+      ],
+      "ui_paths": [
+        "Settings > Project > Sessions / Configuration library > Logins"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_resource_pools",
+      "category": "A_SCANNING",
+      "name": "Resource pools",
+      "pro_only": true,
+      "description": "Control concurrency, rate limits, and resource allocation to reduce target load and manage local resources.",
+      "capabilities": [
+        "Global/Per-task pools",
+        "QPS/parallelism caps"
+      ],
+      "inputs": [
+        "pool_definitions[]"
+      ],
+      "outputs": [
+        "utilization_metrics",
+        "throttled_events"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Settings > Project > Tasks / Dashboard > scan settings"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_live_tasks",
+      "category": "A_SCANNING",
+      "name": "Live tasks",
+      "pro_only": true,
+      "description": "Long-running tasks that continuously monitor or scan within defined parameters.",
+      "capabilities": [
+        "Continuous mode",
+        "Adjustable parameters",
+        "Real-time status"
+      ],
+      "inputs": [
+        "scope",
+        "schedule",
+        "pool_id"
+      ],
+      "outputs": [
+        "issues[]",
+        "events"
+      ],
+      "dependencies": [
+        "scanner_full_crawl_audit",
+        "scanner_targeted"
+      ],
+      "ui_paths": [
+        "Dashboard > Live tasks"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_results_views",
+      "category": "A_SCANNING",
+      "name": "Results views",
+      "pro_only": true,
+      "description": "Comprehensive results panes for scans and live tasks.",
+      "capabilities": [
+        "Summary",
+        "Audit items",
+        "Issues",
+        "Event log",
+        "Audit log",
+        "Live crawl view"
+      ],
+      "inputs": [
+        "scan_id"
+      ],
+      "outputs": [
+        "filtered_views",
+        "exports"
+      ],
+      "dependencies": [
+        "scanner_full_crawl_audit",
+        "scanner_targeted",
+        "scanner_api_only"
+      ],
+      "ui_paths": [
+        "Dashboard > Select scan > Results tabs"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_browser_powered",
+      "category": "A_SCANNING",
+      "name": "Browser-powered scanning",
+      "pro_only": true,
+      "description": "Use embedded Chromium to execute modern front-end logic during crawl and audit.",
+      "capabilities": [
+        "DOM execution",
+        "SPA routing",
+        "XHR/fetch interception"
+      ],
+      "inputs": [
+        "scan_configuration_id"
+      ],
+      "outputs": [
+        "discovered_paths",
+        "client-side_issues"
+      ],
+      "dependencies": [
+        "burp_browser"
+      ],
+      "ui_paths": [
+        "Settings > Tool > Burp’s browser / Scan configuration"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "scanner_bchecks",
+      "category": "A_SCANNING",
+      "name": "BChecks (custom scan checks)",
+      "pro_only": true,
+      "description": "User-authored declarative checks (.bcheck) to augment built-in scanner tests.",
+      "capabilities": [
+        "Author/import/share checks",
+        "Compose with scan configs"
+      ],
+      "inputs": [
+        "bcheck_files[]"
+      ],
+      "outputs": [
+        "custom_issues[]"
+      ],
+      "dependencies": [
+        "configuration_library"
+      ],
+      "ui_paths": [
+        "Settings > Extensions > BChecks / Dashboard > scan config"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "dashboard",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Dashboard",
+      "pro_only": false,
+      "description": "Unified view of scans, live tasks, background activity, and summaries.",
+      "capabilities": [
+        "Scan orchestration",
+        "Task monitoring",
+        "Quick actions"
+      ],
+      "inputs": [],
+      "outputs": [
+        "status_panels"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Dashboard"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "burp_browser",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Burp’s browser",
+      "pro_only": false,
+      "description": "Embedded Chromium-based browser integrated with Proxy and Scanner.",
+      "capabilities": [
+        "Certificate installed",
+        "Intercept aware",
+        "DOM Invader support"
+      ],
+      "inputs": [
+        "start_url"
+      ],
+      "outputs": [
+        "traffic",
+        "dom_artifacts"
+      ],
+      "dependencies": [
+        "proxy",
+        "dom_invader"
+      ],
+      "ui_paths": [
+        "Tools > Burp’s browser"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "proxy",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Proxy",
+      "pro_only": false,
+      "description": "Intercept and modify HTTP(S) and WebSocket traffic.",
+      "capabilities": [
+        "Intercept",
+        "HTTP history",
+        "WebSockets history",
+        "Match & Replace",
+        "CA management",
+        "Invisible proxying"
+      ],
+      "inputs": [
+        "client_traffic"
+      ],
+      "outputs": [
+        "modified_requests",
+        "archives"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Tools > Proxy"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "repeater",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Repeater",
+      "pro_only": false,
+      "description": "Manually craft and resend HTTP/WebSocket messages.",
+      "capabilities": [
+        "Tab groups",
+        "Custom actions (Bambdas)",
+        "AI in Repeater"
+      ],
+      "inputs": [
+        "requests",
+        "ws_messages"
+      ],
+      "outputs": [
+        "responses",
+        "timings"
+      ],
+      "dependencies": [
+        "bambdas",
+        "burp_ai_repeater"
+      ],
+      "ui_paths": [
+        "Tools > Repeater"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "intruder",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Intruder",
+      "pro_only": false,
+      "description": "Flexible attack framework for payload injection and fuzzing.",
+      "capabilities": [
+        "Sniper",
+        "Battering ram",
+        "Pitchfork",
+        "Cluster bomb",
+        "Payload types",
+        "Payload processing",
+        "Resource pools"
+      ],
+      "inputs": [
+        "base_request",
+        "payload_lists[]"
+      ],
+      "outputs": [
+        "attack_results",
+        "matches"
+      ],
+      "dependencies": [
+        "proxy",
+        "target"
+      ],
+      "ui_paths": [
+        "Tools > Intruder"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "target",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Target",
+      "pro_only": false,
+      "description": "Site map, scope control, crawl paths, issue definitions, manual mapping, and analysis aids.",
+      "capabilities": [
+        "Site map",
+        "Scope",
+        "Crawl paths",
+        "Issue definitions",
+        "Manual mapping",
+        "Unrequested items",
+        "Attack surface analysis"
+      ],
+      "inputs": [
+        "observed_traffic"
+      ],
+      "outputs": [
+        "structured_map"
+      ],
+      "dependencies": [
+        "proxy",
+        "scanner_full_crawl_audit"
+      ],
+      "ui_paths": [
+        "Tools > Target"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "inspector",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Inspector",
+      "pro_only": false,
+      "description": "Side-pane analysis and editors for messages.",
+      "capabilities": [
+        "Header/param editing",
+        "Auto-parsing"
+      ],
+      "inputs": [
+        "message"
+      ],
+      "outputs": [
+        "edited_message"
+      ],
+      "dependencies": [
+        "message_editor"
+      ],
+      "ui_paths": [
+        "Side panel > Inspector"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "message_editor",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Message editor / Text editor",
+      "pro_only": false,
+      "description": "Unified HTTP/WebSocket/text editor used across tools.",
+      "capabilities": [
+        "Raw/Params/Hex",
+        "Syntax helpers"
+      ],
+      "inputs": [
+        "message"
+      ],
+      "outputs": [
+        "edited_message"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Settings > UI > Message editor"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "collaborator",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Burp Collaborator (OAST)",
+      "pro_only": true,
+      "description": "Out-of-band interaction server and client integration for detecting SSRF/Blind XSS and similar.",
+      "capabilities": [
+        "DNS/HTTP callbacks",
+        "Poll & correlate",
+        "Private server support"
+      ],
+      "inputs": [
+        "payloads",
+        "collaborator_server_config"
+      ],
+      "outputs": [
+        "oast_interactions"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Tools > Collaborator / Settings > Project > Collaborator"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "logger",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Logger",
+      "pro_only": false,
+      "description": "Global real-time log of requests from all tools and extensions.",
+      "capabilities": [
+        "Capture filters",
+        "View filters",
+        "Scripted filters",
+        "Custom columns",
+        "Task Logger",
+        "Show extension requests"
+      ],
+      "inputs": [
+        "tool_traffic"
+      ],
+      "outputs": [
+        "log_views",
+        "exports"
+      ],
+      "dependencies": [
+        "extensions"
+      ],
+      "ui_paths": [
+        "Tools > Logger"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "sequencer",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Sequencer",
+      "pro_only": false,
+      "description": "Analyze randomness of tokens and session identifiers.",
+      "capabilities": [
+        "Live capture",
+        "Statistical tests"
+      ],
+      "inputs": [
+        "token_source_request"
+      ],
+      "outputs": [
+        "entropy_report",
+        "test_results"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Tools > Sequencer"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "dom_invader",
+      "category": "B_MANUAL_TOOLS",
+      "name": "DOM Invader",
+      "pro_only": false,
+      "description": "Browser extension for DOM-based vulnerability testing.",
+      "capabilities": [
+        "DOM XSS",
+        "Web message XSS",
+        "Prototype pollution",
+        "DOM clobbering",
+        "Canary tuning"
+      ],
+      "inputs": [
+        "target_page"
+      ],
+      "outputs": [
+        "dom_findings"
+      ],
+      "dependencies": [
+        "burp_browser"
+      ],
+      "ui_paths": [
+        "Burp’s browser > DOM Invader"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "clickbandit",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Clickbandit",
+      "pro_only": false,
+      "description": "Generate clickjacking proof-of-concept pages.",
+      "capabilities": [
+        "PoC generator"
+      ],
+      "inputs": [
+        "target_url"
+      ],
+      "outputs": [
+        "poc_html"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Tools > Clickbandit"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "comparer",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Comparer",
+      "pro_only": false,
+      "description": "Visual diff of two pieces of data.",
+      "capabilities": [
+        "Side-by-side diff"
+      ],
+      "inputs": [
+        "data_a",
+        "data_b"
+      ],
+      "outputs": [
+        "diff_view"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Tools > Comparer"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "decoder",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Decoder",
+      "pro_only": false,
+      "description": "Encode/decode/transform data using common schemes and hashes.",
+      "capabilities": [
+        "Base64/URL/HTML",
+        "Hashing"
+      ],
+      "inputs": [
+        "data"
+      ],
+      "outputs": [
+        "transformed_data"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Tools > Decoder"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "engagement_tools",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Engagement tools",
+      "pro_only": false,
+      "description": "Operational helpers for engagements.",
+      "capabilities": [
+        "Target analyzer",
+        "Content discovery",
+        "Generate CSRF PoC",
+        "Manual testing simulator"
+      ],
+      "inputs": [
+        "scope",
+        "wordlists"
+      ],
+      "outputs": [
+        "discovered_paths",
+        "poc_artifacts"
+      ],
+      "dependencies": [
+        "target"
+      ],
+      "ui_paths": [
+        "Tools > Engagement tools"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "infiltrator",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Infiltrator",
+      "pro_only": false,
+      "description": "IAST-style probes to detect if input reaches dangerous API sinks.",
+      "capabilities": [
+        "Probe injection",
+        "Collaborator correlation"
+      ],
+      "inputs": [
+        "probe_payloads"
+      ],
+      "outputs": [
+        "sink_signals"
+      ],
+      "dependencies": [
+        "collaborator"
+      ],
+      "ui_paths": [
+        "Tools > Infiltrator"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "organizer",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Organizer",
+      "pro_only": false,
+      "description": "Bookmark, tag, and annotate important requests/responses.",
+      "capabilities": [
+        "Archiving",
+        "Tagging",
+        "Notes"
+      ],
+      "inputs": [
+        "messages"
+      ],
+      "outputs": [
+        "collections"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Tools > Organizer"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "search",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Search",
+      "pro_only": false,
+      "description": "Global search across the workspace.",
+      "capabilities": [
+        "Regex/text search",
+        "Scope-aware"
+      ],
+      "inputs": [
+        "query"
+      ],
+      "outputs": [
+        "search_results"
+      ],
+      "dependencies": [
+        "logger",
+        "target",
+        "proxy"
+      ],
+      "ui_paths": [
+        "Tools > Search"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "context_menu",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Context menu",
+      "pro_only": false,
+      "description": "Cross-tool right-click actions pipeline.",
+      "capabilities": [
+        "Send to Repeater/Intruder/Scanner",
+        "Create CSRF PoC",
+        "Copy as ..."
+      ],
+      "inputs": [
+        "selection"
+      ],
+      "outputs": [
+        "action_triggered"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Right-click anywhere"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "filter_settings",
+      "category": "B_MANUAL_TOOLS",
+      "name": "Filter settings",
+      "pro_only": false,
+      "description": "Centralized control for complex filters used in multiple tools.",
+      "capabilities": [
+        "Save/load filters",
+        "Scripted filters"
+      ],
+      "inputs": [
+        "filter_definitions"
+      ],
+      "outputs": [
+        "reusable_filters"
+      ],
+      "dependencies": [
+        "logger",
+        "proxy",
+        "target"
+      ],
+      "ui_paths": [
+        "Settings > Tool > * > Filters"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "protocol_http2",
+      "category": "B_MANUAL_TOOLS",
+      "name": "HTTP/2 support",
+      "pro_only": false,
+      "description": "HTTP/2 message editing and testing capabilities available in message editor and tools.",
+      "capabilities": [
+        "Protocol downgrade/upgrade strategies",
+        "Frame-level considerations"
+      ],
+      "inputs": [
+        "http2_messages"
+      ],
+      "outputs": [
+        "modified_http2_requests"
+      ],
+      "dependencies": [
+        "message_editor"
+      ],
+      "ui_paths": [
+        "Message editor > HTTP/2 options"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "burp_ai_issues",
+      "category": "C_BURP_AI",
+      "name": "Explore issues with AI",
+      "pro_only": true,
+      "description": "Use AI to analyze scan findings, propose next steps, and summarize impact.",
+      "capabilities": [
+        "Root-cause hints",
+        "Test ideas",
+        "Impact summaries"
+      ],
+      "inputs": [
+        "scan_issue"
+      ],
+      "outputs": [
+        "ai_notes",
+        "suggested_tests"
+      ],
+      "dependencies": [
+        "scanner_results_views"
+      ],
+      "ui_paths": [
+        "Scan results > Explore with AI"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "burp_ai_repeater",
+      "category": "C_BURP_AI",
+      "name": "Burp AI in Repeater",
+      "pro_only": true,
+      "description": "Invoke AI in Repeater to explain requests/responses and suggest modifications/payloads.",
+      "capabilities": [
+        "Explain",
+        "Suggest payloads",
+        "Auto-generate actions"
+      ],
+      "inputs": [
+        "repeater_tab"
+      ],
+      "outputs": [
+        "ai_suggestions"
+      ],
+      "dependencies": [
+        "repeater"
+      ],
+      "ui_paths": [
+        "Repeater > AI button"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "burp_ai_recorded_logins",
+      "category": "C_BURP_AI",
+      "name": "AI-generated Recorded Logins",
+      "pro_only": true,
+      "description": "Assist in creating recorded login sequences using AI guidance or generation.",
+      "capabilities": [
+        "Guided login recording",
+        "Generated steps draft"
+      ],
+      "inputs": [
+        "login_page_url",
+        "credentials_placeholder"
+      ],
+      "outputs": [
+        "recorded_login_sequence"
+      ],
+      "dependencies": [
+        "scanner_authenticated",
+        "configuration_library"
+      ],
+      "ui_paths": [
+        "Configuration library > Logins > Create (AI-assisted)"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "burp_ai_extensions",
+      "category": "C_BURP_AI",
+      "name": "AI-powered extensions / custom actions",
+      "pro_only": true,
+      "description": "Patterns and hooks to augment extensions or custom actions with AI capabilities.",
+      "capabilities": [
+        "AI-enabled Bambdas",
+        "AI helpers in extensions"
+      ],
+      "inputs": [
+        "extension_context"
+      ],
+      "outputs": [
+        "ai_enhanced_workflows"
+      ],
+      "dependencies": [
+        "bambdas",
+        "extensions"
+      ],
+      "ui_paths": [
+        "Extensions > Manage / Custom actions"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "burp_ai_settings",
+      "category": "C_BURP_AI",
+      "name": "AI settings",
+      "pro_only": true,
+      "description": "Control AI credits, privacy, and data handling policies.",
+      "capabilities": [
+        "Credit tracking",
+        "Privacy toggles",
+        "Telemetry controls"
+      ],
+      "inputs": [
+        "policy"
+      ],
+      "outputs": [
+        "ai_policy_state"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Settings > AI"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "bapp_store",
+      "category": "D_EXTENSIBILITY",
+      "name": "BApp Store & Extensions",
+      "pro_only": false,
+      "description": "Install/manage extensions from the BApp Store or manual JARs.",
+      "capabilities": [
+        "Install/uninstall",
+        "Manual load",
+        "Troubleshoot"
+      ],
+      "inputs": [
+        "extension_artifacts"
+      ],
+      "outputs": [
+        "extension_list"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Extensions > BApp Store"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "montoya_api",
+      "category": "D_EXTENSIBILITY",
+      "name": "Montoya API (current)",
+      "pro_only": false,
+      "description": "Official API for building Burp extensions.",
+      "capabilities": [
+        "Tool integrations",
+        "HTTP hooks",
+        "UI controls"
+      ],
+      "inputs": [
+        "java_kotlin_code"
+      ],
+      "outputs": [
+        "extension_jar"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Extensions > Create / Docs"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "extender_api_legacy",
+      "category": "D_EXTENSIBILITY",
+      "name": "Extender API (legacy)",
+      "pro_only": false,
+      "description": "Legacy extension API for backward compatibility.",
+      "capabilities": [
+        "Historical integrations"
+      ],
+      "inputs": [
+        "java_code"
+      ],
+      "outputs": [
+        "extension_jar"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "Extensions > Legacy"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "bambdas",
+      "category": "D_EXTENSIBILITY",
+      "name": "Bambdas (custom actions scripting)",
+      "pro_only": false,
+      "description": "Scriptable custom actions integrated across tools (e.g., Repeater, Logger filters, Match & Replace).",
+      "capabilities": [
+        "Create/Import/Manage",
+        "Attach to menus",
+        "Scripted filters"
+      ],
+      "inputs": [
+        "java_source_snippets"
+      ],
+      "outputs": [
+        "custom_actions"
+      ],
+      "dependencies": [
+        "context_menu",
+        "logger",
+        "repeater",
+        "proxy"
+      ],
+      "ui_paths": [
+        "Settings > Extensions > Bambdas / Tools > Repeater > Custom actions"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "rest_api",
+      "category": "D_EXTENSIBILITY",
+      "name": "REST API",
+      "pro_only": false,
+      "description": "Suite-level REST API for automation and integration.",
+      "capabilities": [
+        "Start scans",
+        "Query issues",
+        "Project control"
+      ],
+      "inputs": [
+        "http_requests"
+      ],
+      "outputs": [
+        "json_objects"
+      ],
+      "dependencies": [
+        "suite_settings_rest_api"
+      ],
+      "ui_paths": [
+        "Settings > Suite > REST API"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "extensions_requests_logger",
+      "category": "D_EXTENSIBILITY",
+      "name": "Extensions traffic visibility",
+      "pro_only": false,
+      "description": "View extension-generated requests in Logger for auditing.",
+      "capabilities": [
+        "Attribution",
+        "Filtering"
+      ],
+      "inputs": [
+        "extension_requests"
+      ],
+      "outputs": [
+        "logged_extension_requests"
+      ],
+      "dependencies": [
+        "logger",
+        "extensions"
+      ],
+      "ui_paths": [
+        "Logger > filter by tool=extension"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "bchecks_ext",
+      "category": "D_EXTENSIBILITY",
+      "name": "BChecks (extensibility view)",
+      "pro_only": false,
+      "description": "Author/share BChecks files and integrate with scan configurations.",
+      "capabilities": [
+        "Authorship",
+        "Sharing",
+        "Library management"
+      ],
+      "inputs": [
+        "bcheck_files[]"
+      ],
+      "outputs": [
+        "bcheck_library_state"
+      ],
+      "dependencies": [
+        "scanner_bchecks",
+        "configuration_library"
+      ],
+      "ui_paths": [
+        "Settings > Extensions > BChecks"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "project_files",
+      "category": "E_PROJECTS_FILES",
+      "name": "Project files (.burp)",
+      "pro_only": false,
+      "description": "Persist work to disk or run in-memory; reopen and resume testing later.",
+      "capabilities": [
+        "Temporary project",
+        "New project on disk",
+        "Open existing project",
+        "Safety wizard options (pause automated tasks, trust flags)"
+      ],
+      "inputs": [
+        "project_path",
+        "options"
+      ],
+      "outputs": [
+        "project_state"
+      ],
+      "dependencies": [],
+      "ui_paths": [
+        "File > New project on disk / Open project"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "configuration_library",
+      "category": "E_PROJECTS_FILES",
+      "name": "Configuration library",
+      "pro_only": false,
+      "description": "Reusable library for scan configs, login sequences, and related assets.",
+      "capabilities": [
+        "Save/edit configs",
+        "Reference by ID",
+        "Share across projects"
+      ],
+      "inputs": [
+        "config_items[]"
+      ],
+      "outputs": [
+        "config_ids"
+      ],
+      "dependencies": [
+        "scanner_full_crawl_audit",
+        "scanner_authenticated"
+      ],
+      "ui_paths": [
+        "Settings > Configuration library"
+      ],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_key",
+      "category": "F_SETTINGS",
+      "name": "Key settings",
+      "pro_only": false,
+      "description": "Frequently accessed essentials and shortcuts.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_tool_proxy",
+      "category": "F_SETTINGS",
+      "name": "Tool settings – Proxy",
+      "pro_only": false,
+      "description": "Proxy tool-specific settings including filters and interception.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_tool_intruder",
+      "category": "F_SETTINGS",
+      "name": "Tool settings – Intruder",
+      "pro_only": false,
+      "description": "Intruder defaults and performance controls.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_tool_repeater",
+      "category": "F_SETTINGS",
+      "name": "Tool settings – Repeater",
+      "pro_only": false,
+      "description": "Repeater tab behavior, editors, and actions.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_tool_sequencer",
+      "category": "F_SETTINGS",
+      "name": "Tool settings – Sequencer",
+      "pro_only": false,
+      "description": "Sequencer capture and analysis controls.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_tool_browser",
+      "category": "F_SETTINGS",
+      "name": "Tool settings – Burp’s browser",
+      "pro_only": false,
+      "description": "Embedded browser behaviors and certificates.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_project_scope",
+      "category": "F_SETTINGS",
+      "name": "Project settings – Scope",
+      "pro_only": false,
+      "description": "Define what is in/out of scope for tools and scans.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_project_collaborator",
+      "category": "F_SETTINGS",
+      "name": "Project settings – Collaborator",
+      "pro_only": false,
+      "description": "Configure Collaborator servers and polling.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_project_tasks",
+      "category": "F_SETTINGS",
+      "name": "Project settings – Tasks",
+      "pro_only": false,
+      "description": "Project-level automated tasks and pools.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_project_backup",
+      "category": "F_SETTINGS",
+      "name": "Project settings – Automatic backup",
+      "pro_only": false,
+      "description": "Automatic backup of project state.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_project_logging",
+      "category": "F_SETTINGS",
+      "name": "Project settings – Logging",
+      "pro_only": false,
+      "description": "Control project logging granularity and destinations.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_session_sessions",
+      "category": "F_SETTINGS",
+      "name": "Session settings – Sessions",
+      "pro_only": false,
+      "description": "Session options and cookie handling.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_session_rules",
+      "category": "F_SETTINGS",
+      "name": "Session settings – Session handling rule editor",
+      "pro_only": false,
+      "description": "Define macros and rules for maintaining auth.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_session_macro",
+      "category": "F_SETTINGS",
+      "name": "Session settings – Macro editor",
+      "pro_only": false,
+      "description": "Record and maintain macro sequences.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_network_connections",
+      "category": "F_SETTINGS",
+      "name": "Network settings – Connections",
+      "pro_only": false,
+      "description": "Proxy settings, upstreams, and socks.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_network_dns",
+      "category": "F_SETTINGS",
+      "name": "Network settings – DNS",
+      "pro_only": false,
+      "description": "Custom resolvers and host mappings.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_network_tls",
+      "category": "F_SETTINGS",
+      "name": "Network settings – TLS",
+      "pro_only": false,
+      "description": "Protocols, ciphers, certificate handling.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_network_http",
+      "category": "F_SETTINGS",
+      "name": "Network settings – HTTP",
+      "pro_only": false,
+      "description": "User-agent, headers, HTTP/2 options.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_ui_sidepanel",
+      "category": "F_SETTINGS",
+      "name": "User interface – Side panel",
+      "pro_only": false,
+      "description": "Control visibility and layout of the side panel.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_ui_message_editor",
+      "category": "F_SETTINGS",
+      "name": "User interface – Message editor",
+      "pro_only": false,
+      "description": "Editor behaviors, views, and encodings.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_ui_hotkeys",
+      "category": "F_SETTINGS",
+      "name": "User interface – Hotkeys",
+      "pro_only": false,
+      "description": "Define keyboard shortcuts.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_ui_display",
+      "category": "F_SETTINGS",
+      "name": "User interface – Display",
+      "pro_only": false,
+      "description": "Themes, fonts, and density.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "suite_settings_rest_api",
+      "category": "F_SETTINGS",
+      "name": "Suite settings – REST API",
+      "pro_only": false,
+      "description": "Enable and configure REST API.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "suite_settings_updates",
+      "category": "F_SETTINGS",
+      "name": "Suite settings – Updates",
+      "pro_only": false,
+      "description": "Update channels and notifications.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "suite_settings_early_adopter",
+      "category": "F_SETTINGS",
+      "name": "Suite settings – Early adopter",
+      "pro_only": false,
+      "description": "Opt into early features.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "suite_settings_perf_feedback",
+      "category": "F_SETTINGS",
+      "name": "Suite settings – Performance feedback",
+      "pro_only": false,
+      "description": "Telemetry and feedback settings.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "suite_settings_temp_files",
+      "category": "F_SETTINGS",
+      "name": "Suite settings – Temporary files location",
+      "pro_only": false,
+      "description": "Choose temp folder behavior.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "suite_settings_startup",
+      "category": "F_SETTINGS",
+      "name": "Suite settings – Startup behavior",
+      "pro_only": false,
+      "description": "Define startup actions and defaults.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "suite_settings_shutdown",
+      "category": "F_SETTINGS",
+      "name": "Suite settings – Shutdown behavior",
+      "pro_only": false,
+      "description": "Define shutdown cleanup and warnings.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_ai",
+      "category": "F_SETTINGS",
+      "name": "AI settings",
+      "pro_only": false,
+      "description": "Credits, privacy, and policies for AI features.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_extensions",
+      "category": "F_SETTINGS",
+      "name": "Extensions settings",
+      "pro_only": false,
+      "description": "Extension repository and loading behavior.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_config_library",
+      "category": "F_SETTINGS",
+      "name": "Configuration library",
+      "pro_only": false,
+      "description": "Library management (also exposed in Project panel).",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "settings_response_extraction",
+      "category": "F_SETTINGS",
+      "name": "Response extraction rules",
+      "pro_only": false,
+      "description": "Centralized management of response extraction rules.",
+      "capabilities": [],
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "ui_paths": [],
+      "criticality": "core"
+    },
+    {
+      "id": "reporting_scan_results",
+      "category": "G_REPORTING",
+      "name": "Reporting scan results",
+      "pro_only": true,
+      "description": "Interactive report generation with configurable scope and content.",
+      "capabilities": [
+        "Select content",
+        "Filter issues",
+        "Export formats"
+      ],
+      "inputs": [
+        "scan_id",
+        "report_settings"
+      ],
+      "outputs": [
+        "report_file"
+      ],
+      "dependencies": [
+        "scanner_results_views"
+      ],
+      "ui_paths": [
+        "Scan results > Report"
+      ],
+      "criticality": "core"
+    }
+  ]
+}

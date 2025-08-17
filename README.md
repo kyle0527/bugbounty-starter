@@ -1,125 +1,89 @@
-# Bug Bounty Starter（No‑Report）+ 架構圖 v1.4
-> 日期：2025-08-17 ｜狀態：**可直接上傳 GitHub**（含 Mermaid 架構圖與自動轉圖 Workflow）。
+# Burp Suite Professional – 規格包（Spec Pack）
+版本標記：v2025-08-17　｜　產生日期（UTC）：2025-08-17
 
-本專案提供：
-- **最新架構圖（Mermaid）**：說明「合規→枚舉→RBAC→API/LLM PoC」流程。
-- **可直接使用的骨架與腳本**：`templates/`、`poc/`、`scripts/`、`standards/`。
-- **GitHub Actions**（可選）：自動把 `diagrams/*.mmd` 轉成 SVG 並提交回 repo。
+本 repo 收錄可讓 AI（例：ChatGPT Codex）直接工作的完整規格檔與任務配置，對齊「A–G 七大類」功能表。
 
 ---
 
-## 架構圖（Mermaid）
-> GitHub 原生支援 Mermaid；若未顯示，請直接檢視 `diagrams/architecture.mmd`。
-
-```mermaid
-%% Architecture v1.4 (2025-08-17)
-flowchart TD
-    A([Start]) --> B[選擇授權計畫 & 讀取 Safe Harbor]
-    B --> C[建立 scope.txt（In‑Scope 根網域）]
-    C --> D{Recon（被動 + 低並發）}
-    D --> D1[(subs.txt)]
-    D --> D2[(httpx.json)]
-    D2 --> E[產生 targets.csv\n(login? / api? 初標)]
-    E --> F[RBAC 矩陣 rbac_matrix.csv\n(資源 × 操作 × 角色 × 預期)]
-    F --> G{選擇專攻軌}
-    G --> H[API 軌：BOLA/BOPLA / Rate‑Limit / GraphQL & OpenAPI]
-    G --> I[LLM 軌：Insecure Output Handling / Excessive Agency / 資料外洩]
-    H --> J[(證據 .txt/.png/.mp4)]
-    I --> J
-    J --> K[候選議題暫存（免報告版不提交）]
-    style K fill:#eee,stroke:#999,stroke-dasharray: 5 5
-    B -.合規閘-.->|無 Safe Harbor/條款不清| X[(停止)]
-    D --- R[非侵入規則: threads≤25, rate≤50, 僅 GET/HEAD, 禁目錄爆破/壓測]
-    subgraph 輸出/目錄結構
-        E
-        F
-        J
-    end
-```
+## 目錄結構
+- `burp_pro_spec.json`：**機器可讀規格**（含 feature IDs、依賴、輸入/輸出、Pro-only 標記等）。
+- `PROMPT_Agent_Instructions.md`：**AI 建置指令稿**（放入 AI 的 system 指令區）。
+- `ACCEPTANCE_Checklist.md`：**驗收清單**（全域 gate 與各模組測試要點）。
+- `TASKS_Plan.csv`：**任務規劃**（feature_id、依賴、優先度、預估點數）。
+- `README.md`：本說明。
+- `codex_first_prompt.txt`：**在 Codex 中貼的第一段指令**（可直接複製）。
 
 ---
 
-## 專案目錄
-```
-.
-├─ diagrams/
-│  └─ architecture.mmd
-├─ templates/
-│  ├─ policy_diff.md
-│  └─ rbac_matrix.csv
-├─ poc/
-│  ├─ api_bola_skeleton.txt
-│  └─ llm_output_handling_skeleton.md
-├─ scripts/
-│  ├─ recon_no_report_v2.sh
-│  └─ recon_passive.ps1
-├─ standards/
-│  └─ evidence_naming.md
-└─ .github/workflows/
-   └─ render-mermaid.yml   # 可選：自動把 .mmd 轉為 .svg
-```
+## 一、上傳到 GitHub（快速流程）
+> 若你已在 GitHub 建好空 repo：直接把上述檔案上傳到 **repo 根目錄**（main 分支）。
 
----
+### 方法 A：GitHub 網頁 UI（最簡單）
+1. 進入新建的 repo → **Add file ▸ Upload files**。
+2. 拖曳本機的 `burp_pro_spec.json`、`PROMPT_Agent_Instructions.md`、`ACCEPTANCE_Checklist.md`、`TASKS_Plan.csv`、`README.md`、`codex_first_prompt.txt`。
+3. **Commit changes**。
 
-## 快速開始（Linux/macOS）
+### 方法 B：Git 命令列（選用）
 ```bash
-# 1) 安裝 subfinder / httpx / jq（或改用 Windows 備援腳本）
-# 2) 建立 scope.txt（每行一個 in-scope 根網域）
-echo "example.com" > scope.txt
-
-# 3) 低並發被動枚舉 + 探活 + 產出 CSV
-chmod +x scripts/recon_no_report_v2.sh
-./scripts/recon_no_report_v2.sh scope.txt
-
-# 4) 編輯 templates/rbac_matrix.csv，開始 RBAC 驅動驗證
-```
-
-## 快速開始（Windows/PowerShell）
-```powershell
-# 1) 建立 scope.txt（每行一個 in-scope 根網域）
-'example.com' | Out-File -Encoding utf8 scope.txt
-
-# 2) 完全被動備援（無需外部工具）
-powershell -ExecutionPolicy Bypass -File .\scripts\recon_passive.ps1 example.com
-
-# 3) 產出的 recon_example.com_yyyymmdd\targets.csv 供 RBAC/PoC 使用
-```
-
----
-
-## GitHub 上傳（兩種方式）
-### A. Git CLI（手動）
-```bash
-git init
+git init -b main
 git add .
-git commit -m "Initial commit: starter + architecture v1.4"
-git branch -M main
-git remote add origin https://github.com/<YOUR-USER>/<REPO-NAME>.git
+git commit -m "Initial commit: Burp Pro spec pack"
+git remote add origin https://github.com/<你>/burp-pro-spec.git
 git push -u origin main
 ```
 
-### B. GitHub CLI（一次完成）
+---
+
+## 二、在 ChatGPT 內用 **Codex（雲端工程代理）** 連接此 repo
+> 目的：讓 Codex 可載入 repo、讀取 `burp_pro_spec.json`，並依 `TASKS_Plan.csv` 開工。
+
+1. **連接 GitHub**（只授權此 repo；建議 Private）。  
+2. 開啟 **Codex** → **Create Environment** → 選此 repo 建立環境。  
+3. 進入環境後，切到 *Ask* 或 *Code* 模式。  
+4. **把 `codex_first_prompt.txt` 內容貼到 Codex 的對話輸入框**並送出（見下一節）。
+
+---
+
+## 三、第一個指令要貼哪裡、怎麼貼？
+- **貼哪裡**：在 Codex 介面的輸入框（*Ask* 或 *Code* 模式皆可）。  
+- **怎麼貼**：打開本 repo 的 `codex_first_prompt.txt`，**全選複製**，直接貼上後送出。  
+- Codex 會：
+  1) 讀取 `burp_pro_spec.json` 與 `TASKS_Plan.csv`；  
+  2) 產生實作規劃與初始目錄骨架；  
+  3) 建立測試腳手架與反向驗證報表（coverage.json/CSV）。
+
+---
+
+## 四、（選用）本機 **Codex CLI** 工作流
 ```bash
-gh repo create <REPO-NAME> --public --source . --push
+# 安裝
+npm install -g @openai/codex
+
+# 在 repo 根目錄啟動（建議先用建議模式）
+codex            # 互動建議
+# 或可寫檔
+codex --auto-edit
+# 或全自動（沙箱）
+codex --full-auto
 ```
-
-> **隱私與限制**：本專案不包含任何私人憑證；我無法，也不會替你登入或上傳至你的 GitHub。請在你的環境執行上述命令。
-
----
-
-## 可選：自動把 Mermaid 轉成 SVG
-- 推送後，GitHub Actions 會安裝 `@mermaid-js/mermaid-cli`，將 `diagrams/*.mmd` 轉為 `diagrams/*.svg`，並自動提交。
-- 如需停用，刪除 `.github/workflows/render-mermaid.yml`。
+> 進入會話後，將 `codex_first_prompt.txt` 內容貼入 Codex CLI 的對話。
 
 ---
 
-## 標準規則（摘要）
-1) **合規優先**：無 Safe Harbor／條款不清 → 停止。
-2) **非侵入**：被動來源＋低並發（threads ≤ 25，rate ≤ 50），僅 GET/HEAD。
-3) **RBAC 驅動**：每個測試用例對應 `rbac_matrix.csv` 一行。
-4) **資料最小化**：證據遮蔽敏感資訊；不含個資/密鑰。
+## 五、驗收與治理
+- 遵循 `PROMPT_Agent_Instructions.md` 與 `ACCEPTANCE_Checklist.md` 的規則。  
+- 強制**反向驗證**：每次提交需更新 feature 覆蓋對照表（mapping/coverage.json）。  
+- 標準版本：`EvalRules_v2025-08-17`。
 
 ---
 
-## 版本
-- v1.4：新增 GitHub Actions 轉圖、完善 Windows 備援腳本、更新架構圖。
+## 六、常見問題
+- **看不到新 repo**：GitHub 授權與索引可能有延遲；確保只對此 repo 授權。  
+- **PR 權限**：若要 Codex 自動開 PR，需在 GitHub 上賦予相應權限（最小範圍原則）。  
+- **安全**：建議 Private repo；避免把密鑰放進版本庫。
+
+---
+
+## 七、後續建議
+- 若只做 **Pro 專屬**模組，可在 `TASKS_Plan.csv` 內將非 Pro-only 先標記延後。  
+- 若要多語言範本（Python/TypeScript），可新增 `/impl/` 資料夾，由 Codex 依計畫建立骨架。
