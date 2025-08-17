@@ -1,0 +1,9 @@
+[目標端點]   : https://<host>/api/v1/<resource>/{id}
+[角色/帳號]  : userA（擁有 id=123）→ 嘗試存取 id=124（userB）
+[步驟]
+1) 以 userA 取得 token_A
+2) 用 token_A 對 {id}=124 發送 GET/PUT/PATCH/DELETE
+3) 觀察：是否能讀/改/刪 userB 資源
+[預期]      : 基於物件擁有權應拒絕
+[實際]      : <填寫>
+[影響]      : <資料外洩/任意修改/金錢風險>

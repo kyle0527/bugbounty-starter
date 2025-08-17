@@ -1,0 +1,12 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+# Python / node / misc
+__pycache__/
+node_modules/
+# Evidence / recon outputs (local only; do not commit sensitive data)
+recon_*/
+*.mp4
+*.har
+*.pcap

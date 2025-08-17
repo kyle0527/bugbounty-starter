@@ -1,0 +1,4 @@
+resource,operation,needs_auth,self_allowed,peer_allowed,admin_allowed,expected_behavior,observed_behavior,notes
+/users/{id},GET,yes,yes,no,yes,只有資源擁有者或管理者可讀取,,
+/users/{id},PUT,yes,yes,no,yes,只有資源擁有者或管理者可修改,,
+/orders/{id},GET,yes,yes,no,yes,只可讀取自己的訂單,,

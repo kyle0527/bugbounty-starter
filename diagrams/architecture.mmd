@@ -1,0 +1,23 @@
+%% Architecture v1.4 (2025-08-17)
+flowchart TD
+    A([Start]) --> B[選擇授權計畫 & 讀取 Safe Harbor]
+    B --> C[建立 scope.txt（In‑Scope 根網域）]
+    C --> D{Recon（被動 + 低並發）}
+    D --> D1[(subs.txt)]
+    D --> D2[(httpx.json)]
+    D2 --> E[產生 targets.csv\n(login? / api? 初標)]
+    E --> F[RBAC 矩陣 rbac_matrix.csv\n(資源 × 操作 × 角色 × 預期)]
+    F --> G{選擇專攻軌}
+    G --> H[API 軌：BOLA/BOPLA / Rate‑Limit / GraphQL & OpenAPI]
+    G --> I[LLM 軌：Insecure Output Handling / Excessive Agency / 資料外洩]
+    H --> J[(證據 .txt/.png/.mp4)]
+    I --> J
+    J --> K[候選議題暫存（免報告版不提交）]
+    style K fill:#eee,stroke:#999,stroke-dasharray: 5 5
+    B -.合規閘-.->|無 Safe Harbor/條款不清| X[(停止)]
+    D --- R[非侵入規則: threads≤25, rate≤50, 僅 GET/HEAD, 禁目錄爆破/壓測]
+    subgraph 輸出/目錄結構
+        E
+        F
+        J
+    end
